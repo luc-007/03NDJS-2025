@@ -1,2 +1,55 @@
-bonjour luc
-voici un contenu
+
+Faire une loups
+Comment déclarer un objet et un tableau en node js
+comment définir un tableau en node js
+comment faire une boucle avec fort et while
+les structures iterratives
+les fonctions
+Templatate iterals
+Destructuring Object
+REST & SPREAD 
+.Export/Import ES6
+
+pour exécuter mon ubuntu depuis mon wsl: wsl -d ubuntu
+cd /mnt/c/Users/kemta/Desktop: pour ouvrir Desktop
+mkdir 03NDJS-2025
+ls pour lister
+cd 03NDJS-2025
+git statuts
+git add "chemin du fichier que on a modifier"
+git commit -m "message"
+git push origin master si on à créé le dossier dans le terminale
+git push origin main si on a utilisé gitup desktop
+
+ssh-keygen -t ed25519 -C "kemtaluc23@gmail.com"
+
+
+git remote add origin https://github.com/luc-007/03NDJS-2025.git
+
+git clone https://github.com/luc-007/03NDJS-2025.git (au cas ou le dossier existe déjà en ligne)
+
+git add .                          # Ajoute tous les fichiers
+git commit -m "Premier commit"      # Crée un commit
+git push -u origin main            # Pousse vers GitHub (branche "main")
+
+
+pour installer ndjs dans ubuntu virtuelle: 
+sudo apt update && sudo apt upgrade -y: pour Mettre à jour les paquets existants
+sudo apt install -y nodejs: pour installer node js
+node --version  # Doit afficher la version (ex: v20.13.1)
+npm --version   # Doit afficher la version de npm
+
+
+
+
+# Configurez votre identité (obligatoire pour tout commit)
+git config --global user.email "kemtaluc23@gmail.com"
+git config --global user.name "luc-007"
+
+# Ajoutez les fichiers à commiter
+git add .  # Ou spécifiez un fichier: git add monfichier.txt
+
+# Créez le commit
+git commit -m "Description des modifications"
+
+git push https://luc-007:ghp_abc123...@github.com/luc-007/03NDJS-2025.git main
