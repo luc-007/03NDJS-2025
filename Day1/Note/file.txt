@@ -1,9 +1,17 @@
 Comment déclarer un objet et un tableau en node js
 comment définir un tableau en node js
 comment faire une boucle avec fort et while
+les structures iterratives
+les fonctions
+Templatate iterals
+Destructuring Object
+
 pour exécuter mon ubuntu depuis mon wsl: wsl -d ubuntu
 cd /mnt/c/Users/kemta/Desktop: pour ouvrir Desktop
 mkdir 03NDJS-2025
 ls pour lister
 cd 03NDJS-2025
 git init
+pour ajouter mon fichier en ligne
+git remote add origin https://github.com/luc-007/03NDJS-2025.git
+git clone https://github.com/luc-007/03NDJS-2025.git (au cas ou le dossier existe déjà en ligne)
