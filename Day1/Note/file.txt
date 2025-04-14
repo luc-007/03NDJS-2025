@@ -1,0 +1,9 @@
+Comment déclarer un objet et un tableau en node js
+comment définir un tableau en node js
+comment faire une boucle avec fort et while
+pour exécuter mon ubuntu depuis mon wsl: wsl -d ubuntu
+cd /mnt/c/Users/kemta/Desktop: pour ouvrir Desktop
+mkdir 03NDJS-2025
+ls pour lister
+cd 03NDJS-2025
+git init
