@@ -5,6 +5,8 @@ les structures iterratives
 les fonctions
 Templatate iterals
 Destructuring Object
+REST & SPREAD 
+.Export/Import ES6
 
 pour exécuter mon ubuntu depuis mon wsl: wsl -d ubuntu
 cd /mnt/c/Users/kemta/Desktop: pour ouvrir Desktop
