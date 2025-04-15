@@ -1,0 +1,179 @@
+npm install cheerio
+
+
+Fonction assynchrone
+Utilisez le mot-clé async devant la fonction:
+async function maFonctionAsync() {
+  // Code asynchrone ici
+}
+
+ou avec une fléchée :
+const maFonctionAsync = async () => {
+  // Code asynchrone ici
+};
+
+Utiliser await pour les opérations asynchrones
+await permet d'attendre la résolution d'une Promise (comme un fetch, fs.readFile, etc.) :
+
+const fs = require('fs').promises; // Version Promise de fs
+
+async function lireFichier() {
+  try {
+    const data = await fs.readFile('fichier.txt', 'utf-8');
+    console.log(data);
+  } catch (err) {
+    console.error('Erreur de lecture :', err);
+  }
+}
+
+ Gérer les erreurs avec try/catch
+Les erreurs dans les fonctions async doivent être attrapées avec try/catch :
+
+async function additionAsync(a, b) {
+  return a + b; // Automatiquement encapsulé dans une Promise
+}
+
+// Appel :
+additionAsync(2, 3).then(result => console.log(result)); // 5
+
+Exemple complet (Node.js)
+
+const axios = require('axios'); // Bibliothèque pour les requêtes HTTP
+
+async function getUser(userId) {
+  try {
+    const response = await axios.get(`https://api.example.com/users/${userId}`);
+    console.log('Utilisateur:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Erreur:', error.message);
+  }
+}
+
+// Appel
+getUser(1);
+Quand utiliser l'asynchrone ?
+Lecture/écriture de fichiers (fs.promises).
+
+Requêtes HTTP (API, serveurs).
+
+Bases de données (MongoDB, PostgreSQL, etc.).
+
+Tâches longues pour éviter de bloquer l'Event Loop.
+
+Bonnes pratiques
+Toujours utiliser try/catch avec await.
+
+Éviter les await inutiles (parallélisez avec Promise.all si possible) :
+
+const [result1, result2] = await Promise.all([tache1(), tache2()]);
+
+callback 
+Une callback (ou "fonction de rappel" en français) est une fonction passée comme argument à une autre fonction, qui sera exécutée plus tard (souvent après une opération asynchrone ou un événement).
+
+C'est un concept fondamental en JavaScript, surtout avant l'arrivée des Promises et async/await.
+
+À quoi sert une callback ?
+Gérer l'asynchrone (ex: lecture de fichier, requête API, timer).
+
+Réagir à des événements (ex: clic, chargement de page).
+
+Éviter de bloquer l'exécution du code.
+
+Exemple Basique
+
+// Fonction qui accepte une callback
+function saluer(nom, callback) {
+  console.log(`Bonjour, ${nom} !`);
+  callback(); // On appelle la callback
+}
+
+// Utilisation
+function direAuRevoir() {
+  console.log("Au revoir !");
+}
+
+saluer("Alice", direAuRevoir);
+
+Sortie : Bonjour, Alice !
+         Au revoir !
+
+Callback Asynchrone (Exemple avec setTimeout)
+
+function attendreEtExecuter(callback) {
+  setTimeout(() => {
+    console.log("Opération terminée !");
+    callback(); // Appel après 2 secondes
+  }, 2000);
+}
+
+attendreEtExecuter(() => {
+  console.log("Callback exécutée !");
+});
+
+Sortie (après 2 secondes) : Opération terminée !
+                            Callback exécutée !
+
+Callback dans les APIs Node.js (Exemple avec fs.readFile)
+Quand on imbrique trop de callbacks, le code devient illisible (pyramid of doom) :
+fs.readFile('fichier1.txt', (err1, data1) => {
+  if (err1) throw err1;
+  fs.readFile('fichier2.txt', (err2, data2) => {
+    if (err2) throw err2;
+    fs.writeFile('resultat.txt', data1 + data2, (err3) => {
+      if (err3) throw err3;
+      console.log("Terminé !");
+    });
+  });
+});
+
+6. Quand utiliser les callbacks ?
+API historiques (ex: setTimeout, fs.readFile en Node.js).
+
+Événements (ex: addEventListener dans le DOM).
+
+Compatibilité avec du vieux code.
+
+Résumé
+Callback = Fonction passée en argument et appelée plus tard.
+
+Asynchrone = Ne bloque pas l'exécution du code.
+
+Problème = Peut mener à l'"enfer des callbacks".
+
+Alternative = Promises + async/await (plus propres)
+
+et 
+promises
+Les Promises (Promesses) en JavaScript : Guide Complet
+Les Promises (promesses) sont une solution moderne pour gérer les opérations asynchrones en JavaScript, évitant le "Callback Hell" et rendant le code plus lisible. Elles sont largement utilisées dans les API modernes (Fetch, Node.js, etc.).
+
+1. Qu'est-ce qu'une Promise ?
+Une Promise est un objet qui représente une opération asynchrone et sa completion (ou échec) dans le futur. Elle a 3 états possibles :
+
+pending (en cours).
+
+fulfilled (tenue, réussie).
+
+rejected (rejetée, échouée).
+
+Créer une Promise
+On utilise le constructeur new Promise() qui prend une fonction exécutrice avec 2 arguments :
+
+resolve : Appelé en cas de succès.
+
+reject : Appelé en cas d'échec.
+
+const maPromise = new Promise((resolve, reject) => {
+  // Opération asynchrone (ex: requête API, lecture de fichier)
+  const succes = true; // Simule un résultat
+
+  if (succes) {
+    resolve("Résultat réussi !"); // La Promise est tenue
+  } else {
+    reject("Échec !"); // La Promise est rejetée
+  }
+});
+
+exemple avec fs.readfile
+
