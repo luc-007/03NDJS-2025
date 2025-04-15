@@ -1,79 +1,59 @@
 import * as cheerio from 'cheerio';
-import https from 'https';
+import fs from 'fs/promises';
 
-const url = 'https://www.lequipe.fr/Football/ligue-1/page-classement-equipes/general';
+async function getLigue1Standings() {
+  try {
+    const $ = await cheerio.fromURL('https://www.lequipe.fr/Football/ligue-1/page-classement-equipes/general');
 
-async function scrapeStandings() {
-  return new Promise((resolve, reject) => {
-    https.get(url, (response) => {
-      let data = '';
-      response.on('data', (chunk) => data += chunk);
-      response.on('end', () => {
-        try {
-          const $ = cheerio.load(data);
-          const standings = [];
-
-          // Sélection du tableau et des lignes
-          $('table.table--teams tbody tr').each((index, row) => {
-            const columns = [];
-            $(row).find('td').each((i, col) => {
-              columns.push($(col).text().trim());
-            });
-
-            // Vérification pour éviter les lignes vides (en-têtes)
-            if (columns.length > 0) {
-              // Extraction des données spécifiques
-              const club = columns[1]; // Nom du club (index peut varier selon la structure du tableau)
-              const points = columns[11]; // Points (index peut varier)
-              const joue = columns[2];
-              const gagne = columns[3];
-              const nul = columns[4];
-              const perdu = columns[5];
-              const bp = columns[6];
-              const bc = columns[7];
-              const diff = columns[8];
-
-              standings.push({
-                position: index + 1,
-                club: club,
-                points: points,
-                joue: joue,
-                gagne: gagne,
-                nul: nul,
-                perdu: perdu,
-                bp: bp,
-                bc: bc,
-                diff: diff
-              });
-            }
-          });
-
-          if (!standings.length) throw new Error('Aucune donnée trouvée');
-          resolve(standings);
-        } catch (error) {
-          reject(error);
-        }
-      });
-    }).on('error', reject);
-  });
+    return $('table.table--teams tbody tr').map((i, row) => ({
+      position: i + 1,
+      club: $(row).find('td').eq(1).text().trim(),
+      points: $(row).find('td').eq(11).text().trim(),
+      joue: $(row).find('td').eq(2).text().trim(),
+      gagne: $(row).find('td').eq(3).text().trim(),
+      nul: $(row).find('td').eq(4).text().trim(),
+      perdu: $(row).find('td').eq(5).text().trim(),
+      bp: $(row).find('td').eq(6).text().trim(),
+      bc: $(row).find('td').eq(7).text().trim(),
+      diff: $(row).find('td').eq(8).text().trim()
+    })).get().filter(team => team.club);
+  } catch (error) {
+    console.error('Scraping error:', error);
+    return [];
+  }
 }
 
-// Exécution
-scrapeStandings()
-  .then(standings => {
-    console.log('Classement Ligue 1 2024-2025:');
-    standings.forEach(team => {
-      console.log(`
-        ${team.position}. ${team.club}
-        Points: ${team.points}
-        Matchs Joués: ${team.joue}
-        Gagnés: ${team.gagne}
-        Nuls: ${team.nul}
-        Perdus: ${team.perdu}
-        Buts Pour: ${team.bp}
-        Buts Contre: ${team.bc}
-        Différence: ${team.diff}
-      `);
-    });
-  })
-  .catch(console.error);
+async function exportToJson(data, filename = 'scraper.json') {
+  try {
+    const jsonData = JSON.stringify(data, null, 2);
+    await fs.writeFile(filename, jsonData, 'utf8');
+    console.log(`Données exportées vers ${filename}`);
+  } catch (error) {
+    console.error('Erreur lors de l\'exportation vers JSON:', error);
+  }
+}
+
+// Usage
+async function main() {
+  try {
+    const standings = await getLigue1Standings();
+
+    // Formater les données pour l'affichage (facultatif)
+    const formattedStandings = standings.map(team =>
+      `${team.position}. ${team.club.padEnd(20)} ${team.points} pts` +
+      ` | MJ:${team.joue} G:${team.gagne} N:${team.nul} P:${team.perdu}` +
+      ` | ${team.bp}-${team.bc} (${team.diff})`
+    );
+
+    // Exporter les données formatées vers un fichier JSON
+    await exportToJson(formattedStandings, 'scraper.json');
+
+    // Afficher les données formatées dans la console (facultatif)
+    console.log('Classement Ligue 1 2024-2025:\n' + formattedStandings.join('\n'));
+
+  } catch (error) {
+    console.error("Erreur lors de l'exécution :", error);
+  }
+}
+
+main();
