@@ -1,11 +1,10 @@
 import * as cheerio from 'cheerio';
-import fs from 'fs/promises';
+import { writeFile } from 'fs/promises';
 
-async function getLigue1Standings() {
+async function getAndSaveStandings() {
   try {
     const $ = await cheerio.fromURL('https://www.lequipe.fr/Football/ligue-1/page-classement-equipes/general');
-
-    return $('table.table--teams tbody tr').map((i, row) => ({
+    const standings = $('table.table--teams tbody tr').map((i, row) => ({
       position: i + 1,
       club: $(row).find('td').eq(1).text().trim(),
       points: $(row).find('td').eq(11).text().trim(),
@@ -17,43 +16,20 @@ async function getLigue1Standings() {
       bc: $(row).find('td').eq(7).text().trim(),
       diff: $(row).find('td').eq(8).text().trim()
     })).get().filter(team => team.club);
+
+    // Sauvegarde dans un fichier JSON
+    await writeFile('scraper.json', JSON.stringify(standings, null, 2));
+    console.log('Données sauvegardées dans scraper.json');
+
+    return standings;
   } catch (error) {
-    console.error('Scraping error:', error);
+    console.error('Erreur:', error.message);
     return [];
   }
 }
 
-async function exportToJson(data, filename = 'scraper.json') {
-  try {
-    const jsonData = JSON.stringify(data, null, 2);
-    await fs.writeFile(filename, jsonData, 'utf8');
-    console.log(`Données exportées vers ${filename}`);
-  } catch (error) {
-    console.error('Erreur lors de l\'exportation vers JSON:', error);
-  }
-}
-
-// Usage
-async function main() {
-  try {
-    const standings = await getLigue1Standings();
-
-    // Formater les données pour l'affichage (facultatif)
-    const formattedStandings = standings.map(team =>
-      `${team.position}. ${team.club.padEnd(20)} ${team.points} pts` +
-      ` | MJ:${team.joue} G:${team.gagne} N:${team.nul} P:${team.perdu}` +
-      ` | ${team.bp}-${team.bc} (${team.diff})`
-    );
-
-    // Exporter les données formatées vers un fichier JSON
-    await exportToJson(formattedStandings, 'scraper.json');
-
-    // Afficher les données formatées dans la console (facultatif)
-    console.log('Classement Ligue 1 2024-2025:\n' + formattedStandings.join('\n'));
-
-  } catch (error) {
-    console.error("Erreur lors de l'exécution :", error);
-  }
-}
-
-main();
+// Appel de la fonction
+getAndSaveStandings().then(standings => {
+  console.log('Classement Ligue 1:');
+  console.log(standings.map(t => `${t.position}. ${t.club} - ${t.points} pts`).join('\n'));
+});
