@@ -1,0 +1,9 @@
+création d'un dossier expres_serveur dans exo
+npm init
+npm install mongoose pour installer mongoose
+installation de express (sur npm.com) (npm install express)
+Création d'un dossier DB et dans DB on crée un fichier connectDB.js
+dans espres_serveur on crèe un dossier models et dans models on crèe User.js
+riquire pour dire que ca doit être unique
+
+(modèle d'utilisateur sur mongoose)
