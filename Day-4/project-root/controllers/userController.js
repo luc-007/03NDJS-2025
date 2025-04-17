@@ -5,8 +5,11 @@ const getMe = async(req, res) => {
     try {
         //Extraction du token
         const token = req.headers.authorization.split(' ')[1];
+
         const decoded = jwt.verify(token, 'your-secret-key');
         const userId = decoded.id;
+
+        // Vérification de l'utilisateur dans le tableeau
         const user = users.find(user => user.id === userId);
 
         if (!user) {
