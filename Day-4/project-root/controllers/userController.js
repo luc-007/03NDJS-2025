@@ -1,31 +1,27 @@
-const jwt = require('jsonwebtoken');
-const { users } = require('../models/userModel');
+const User = require('../models/userModel');
 
 const getMe = async(req, res) => {
     try {
-        //Extraction du token
-        const token = req.headers.authorization.split(' ')[1];
-
-        const decoded = jwt.verify(token, 'your-secret-key');
-        const userId = decoded.id;
-
-        // Vérification de l'utilisateur dans le tableeau
-        const user = users.find(user => user.id === userId);
+        const user = await User.findById(req.user.id).select('-password');
 
         if (!user) {
             return res.status(404).json({ message: 'Utilisateur non trouvé' });
         }
 
-        const { password, ...userWithoutPassword } = user;
-        res.json(userWithoutPassword);
+        res.json(user);
     } catch (error) {
         console.error(error);
-        res.status(401).json({ message: 'Jeton invalide' });
+        res.status(500).json({ message: 'Erreur serveur' });
     }
 };
 
 const getAllUsers = async(req, res) => {
     try {
+        if (!req.user.isAdmin) {
+            return res.status(403).json({ message: 'Non autorisé' });
+        }
+
+        const users = await User.find().select('-password');
         res.json(users);
     } catch (error) {
         console.error(error);
@@ -35,14 +31,16 @@ const getAllUsers = async(req, res) => {
 
 const deleteUser = async(req, res) => {
     try {
-        const userId = parseInt(req.params.id);
-        const userIndex = users.findIndex(user => user.id === userId);
+        if (!req.user.isAdmin) {
+            return res.status(403).json({ message: 'Non autorisé' });
+        }
 
-        if (userIndex === -1) {
+        const user = await User.findByIdAndDelete(req.params.id);
+
+        if (!user) {
             return res.status(404).json({ message: 'Utilisateur non trouvé' });
         }
 
-        users.splice(userIndex, 1);
         res.json({ message: 'Utilisateur supprimé' });
     } catch (error) {
         console.error(error);
